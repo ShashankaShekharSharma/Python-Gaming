@@ -20,8 +20,17 @@ class Quiz:
         # Set a timer for 60 seconds
         timeout = time.time() + 60
 
+        # Initialize the start time
+        start_time = time.perf_counter()
+
         # Iterate through the selected questions
         for question in random_questions:
+
+            # Calculate the elapsed time
+            elapsed_time = time.perf_counter() - start_time
+
+            # Display the elapsed time
+            print(f"Elapsed time: {elapsed_time:.2f} seconds")
 
             # Check if the time is up
             if time.time() > timeout:
@@ -31,11 +40,14 @@ class Quiz:
             user_answer = self.display_question(question)
             correct_answer = str(question["answer"])
             
-            if time.time()<timeout:
-                self.score +=0
+            if time.time()>timeout:
+                self.score += 0
+            elif user_answer == 'leave':
+                print("Question Skipped")
+                self.score += 0
             elif user_answer == correct_answer:
                 print("Correct!\n")
-                self.score += 1
+                self.score += 4
             else:
                 print(f"Wrong! The correct answer is {correct_answer}.\n")
                 self.score -= 1
@@ -99,5 +111,8 @@ quiz_questions = [
 ]
 
 # Create a Quiz object and run the quiz
+print("Welcome to Quiz Competetion.")
+print("Instructions:")
+print("For every correct answer you get 4 marks and for every wrong answer you get -1. Type 'leave' if you want to skip the question")
 my_quiz = Quiz(quiz_questions)
 my_quiz.run_quiz()
