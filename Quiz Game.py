@@ -30,8 +30,10 @@ class Quiz:
 
             user_answer = self.display_question(question)
             correct_answer = str(question["answer"])
-
-            if user_answer == correct_answer:
+            
+            if time.time()<timeout:
+                self.score +=0
+            elif user_answer == correct_answer:
                 print("Correct!\n")
                 self.score += 1
             else:
