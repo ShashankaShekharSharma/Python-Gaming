@@ -1,3 +1,4 @@
+import tkinter as tk
 import random
 
 def choose_word(difficulty):
@@ -25,37 +26,86 @@ def get_hint(word):
     hint = ''.join(word[i] if i in hint_indices else '_' for i in range(len(word)))
     return hint
 
-def play_word_jumbles():
-    while True:
-        print("Welcome to Word Jumbles!")
-        
-        difficulty = input("Choose a difficulty level (easy/medium/hard/ninja): ").lower()
-        original_word = choose_word(difficulty)
-        jumbled_word = jumble_word(original_word)
+# Tkinter GUI functions
+def new_game():
+    global original_word, jumbled_word, score
+    difficulty = difficulty_var.get().lower()
+    original_word = choose_word(difficulty)
+    jumbled_word = jumble_word(original_word)
+    canvas.itemconfig(word_text, text=jumbled_word)
+    entry.delete(0, tk.END)
+    answer.config(text="")
+    hint.config(text="")
+    score = 0
+    update_score()
 
-        print("Jumbled Word:", jumbled_word)
+def check():
+    global original_word, score
+    answer_text = entry.get().lower()
+    if answer_text == original_word:
+        score += 1
+        answer.config(text="Congratulations! You guessed it correctly.")
+    else:
+        answer.config(text="Wrong! Try again.")
+    update_score()
 
-        attempts = 3
-        while attempts > 0:
-            guess = input("Your guess (or type 'hint' for a hint): ").lower()
+def show_hint():
+    global original_word, score
+    hint_text = get_hint(original_word)
+    hint.config(text=f"Hint: {hint_text}")
+    score += 0.5
+    update_score()
 
-            if guess == original_word:
-                print("Congratulations! You guessed it correctly.")
-                break
-            elif guess == "hint":
-                hint = get_hint(original_word)
-                print("Hint:", hint)
-            else:
-                attempts -= 1
-                if attempts > 0:
-                    print(f"Wrong! Try again. {attempts} {'attempts' if attempts > 1 else 'attempt'} left.")
-                else:
-                    print(f"Sorry, you're out of attempts. The correct word was: {original_word}")
+def update_score():
+    score_label.config(text=f"Score: {score}")
 
-        play_again = input("Do you want to play again? (yes/no): ").lower()
-        if play_again != 'yes':
-            print("Thanks for playing! Goodbye!")
-            break
+def quit_game():
+    window.destroy()
 
-if __name__ == "__main__":
-    play_word_jumbles()
+# Create the main window
+window = tk.Tk()
+window.title("Word Jumble Game")
+
+# Create and configure widgets
+canvas = tk.Canvas(window, width=400, height=50)
+canvas.pack()
+
+word_text = canvas.create_text(200, 25, text="", font=("Helvetica", 16))
+
+entry = tk.Entry(window)
+entry.pack()
+
+answer = tk.Label(window, text="")
+answer.pack()
+
+hint = tk.Label(window, text="")
+hint.pack()
+
+# Difficulty level selection
+difficulty_var = tk.StringVar()
+difficulty_var.set("easy")
+difficulty_menu = tk.OptionMenu(window, difficulty_var, "easy", "medium", "hard", "ninja")
+difficulty_menu.pack()
+
+# Score label
+score = 0
+score_label = tk.Label(window, text="Score: 0")
+score_label.pack()
+
+# Create buttons
+new_game_button = tk.Button(window, text="New Game", command=new_game)
+check_button = tk.Button(window, text="Check", command=check)
+hint_button = tk.Button(window, text="Hint", command=show_hint)
+quit_button = tk.Button(window, text="Quit", command=quit_game)
+
+# Place buttons in the window
+new_game_button.pack(side=tk.LEFT)
+check_button.pack(side=tk.LEFT)
+hint_button.pack(side=tk.LEFT)
+quit_button.pack(side=tk.LEFT)
+
+# Start the game
+new_game()
+
+# Run the Tkinter event loop
+window.mainloop()
