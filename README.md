@@ -1,4 +1,4 @@
-## Python-Gaming-Programs
+# Python-Gaming-Programs
 
 1. Text-Based Adventure Game: Create a text-based adventure game where players can explore a fantasy world, interact with characters, solve puzzles, and make decisions that impact the storyline.
 
