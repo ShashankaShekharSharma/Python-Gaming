@@ -1,5 +1,3 @@
-
-
 import random
 snakes_and_ladders = {
     16: 6,
