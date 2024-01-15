@@ -53,7 +53,7 @@ def show_hint():
     global original_word, score
     hint_text = get_hint(original_word)
     hint.config(text=f"Hint: {hint_text}")
-    score += 0.5
+    score -= 0.5
     update_score()
 
 def update_score():
