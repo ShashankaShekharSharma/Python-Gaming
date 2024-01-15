@@ -48,7 +48,7 @@ class Quiz:
 
         # Display the score
         if time.time() <= timeout:
-            print(f"You scored {self.score} out of {len(random_questions)}.")
+            print(f"You scored {self.score} out of {len(random_questions)*4}.")
 
 
 # Easy Questions
