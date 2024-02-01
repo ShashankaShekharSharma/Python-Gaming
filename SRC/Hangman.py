@@ -1,9 +1,28 @@
+import tkinter as tk
+from tkinter import simpledialog
 import random
 
-class Hangman:
+class HangmanGUI:
     def __init__(self):
-        print("Welcome to the word guessing game")
-        print("Guess the word related to technology to win the game")
+        self.root = tk.Tk()
+        self.root.title("Hangman Game")
+
+        self.canvas = tk.Canvas(self.root, width=400, height=400)
+        self.canvas.pack()
+
+        self.word_label = tk.Label(self.root, text="Word: ")
+        self.word_label.pack()
+
+        self.hangman_parts = [
+            self.canvas.create_oval(170, 100, 230, 160, width=2, state=tk.HIDDEN),  # Head
+            self.canvas.create_line(200, 160, 200, 280, width=2, state=tk.HIDDEN),  # Body
+            self.canvas.create_line(200, 200, 170, 230, width=2, state=tk.HIDDEN),  # Left arm
+            self.canvas.create_line(200, 200, 230, 230, width=2, state=tk.HIDDEN),  # Right arm
+            self.canvas.create_line(200, 280, 170, 320, width=2, state=tk.HIDDEN),  # Left leg
+            self.canvas.create_line(200, 280, 230, 320, width=2, state=tk.HIDDEN)   # Right leg
+        ]
+
+        self.play_hangman()
 
     def get_word(self):
         words = ["python", "bhailang", "coder", "frontend", "backend", "fullstack", "hardware", "software",
@@ -14,57 +33,59 @@ class Hangman:
                  "terminal", "cloud", "latency", "viewport", "github"]
         return random.choice(words).upper()
 
-    def play_hangman(self):
-        b = int(input("Choose game level: (1. Level 1.  2. Level 2.  3. Level 3.  (Enter the number)"))
-        word = self.get_word()
-        word_letters = set(word)  # Letters in the word
-        alphabet = set(chr(i) for i in range(65, 91))  # All letters of the alphabet
-        used_letters = set()  # Letters already guessed
+    def display_word(self, word, used_letters):
+        word_display = " ".join([letter if letter in used_letters else "-" for letter in word])
+        self.word_label.config(text=f"Word: {word_display}")
 
-        if b == 3:
-            lives = 6
-        elif b == 2:
-            lives = 9
-        else:
-            lives = 12
+    def play_hangman(self):
+        word = self.get_word()
+        word_letters = set(word)
+        alphabet = set(chr(i) for i in range(65, 91))
+        used_letters = set()
+
+        lives = 6
 
         while len(word_letters) > 0 and lives > 0:
-            print("Lives left:", lives)
-            print("Used letters:", " ".join(used_letters))
+            self.display_word(word, used_letters)
 
-            word_list = [letter if letter in used_letters else "-" for letter in word]
-            print("Current word:", " ".join(word_list))
+            user_letter = self.get_user_input(alphabet - used_letters)
+            used_letters.add(user_letter)
 
-            user_letter = input("Guess a letter: ").upper()
-            if user_letter in alphabet - used_letters:
-                used_letters.add(user_letter)
-                if user_letter in word_letters:
-                    word_letters.remove(user_letter)
-                    print("Correct guess!")
-                else:
-                    lives -= 1
-                    print("Incorrect guess!")
-            elif user_letter in used_letters:
-                print("You already guessed that letter. Try again.")
+            if user_letter in word_letters:
+                word_letters.remove(user_letter)
             else:
-                print("Invalid input. Please enter a letter.")
+                lives -= 1
+                self.draw_next_hangman_part(lives)
 
+        self.display_word(word, word_letters)  # Display the remaining letters in the word
+        self.show_game_result(lives, word)
+
+    def get_user_input(self, available_letters):
+        user_letter = simpledialog.askstring("Hangman", f"Available letters: {' '.join(available_letters)}\nGuess a letter:")
+        return user_letter.upper() if user_letter else ""
+
+    def draw_next_hangman_part(self, lives):
+        if lives <= 6:
+            self.canvas.itemconfig(self.hangman_parts[5 - lives], state=tk.NORMAL)
+
+    def show_game_result(self, lives, word):
         if lives == 0:
-            print("You lost! The word was", word)
-            a = int(input("Do you want to play again (1 if yes, 0 if no): "))
-            if a == 1:
-                self.play_hangman()
-            else:
-                print("Bye")
+            self.word_label.config(text=f"Game Over! The word was {word}")
         else:
-            print("You won! The word was", word)
-            a = int(input("Do you want to play again (1 if yes, 0 if no): "))
-            if a == 1:
-                self.play_hangman()
-            else:
-                print("Bye")
+            self.word_label.config(text=f"You won! The word was {word}")
 
+        play_again = simpledialog.askinteger("Hangman", "Do you want to play again? (1 for Yes, 0 for No)", minvalue=0, maxvalue=1)
+
+        if play_again:
+            self.reset_hangman()
+            self.play_hangman()
+        else:
+            self.root.destroy()
+
+    def reset_hangman(self):
+        for part in self.hangman_parts:
+            self.canvas.itemconfig(part, state=tk.HIDDEN)
 
 if __name__ == "__main__":
-    hangman_game = Hangman()
-    hangman_game.play_hangman()
+    hangman_gui = HangmanGUI()
+    hangman_gui.root.mainloop()
