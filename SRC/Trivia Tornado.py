@@ -1,59 +1,70 @@
-import random
-import time
+import tkinter as tk
+from tkinter import messagebox
 
-
-class Quiz:
-    def __init__(self, questions):
+class QuizGUI:
+    def __init__(self, root, questions):
+        self.root = root
         self.questions = questions
         self.score = 0
+        self.question_index = 0
+        self.chances_remaining = 10
 
-    def display_question(self, question):
-        print(question["text"])
-        for i, option in enumerate(question["options"], start=1):
-            print(f"{i}. {option}")
-        user_answer = input("Your answer (enter the option number): ")
-        return user_answer
+        self.root.title("Quiz Competition")
+        self.root.geometry("400x300")
 
-    def run_quiz(self):
-        random_questions = random.sample(self.questions, 10)
-        timeout = time.time() + 100
-        start_time = time.perf_counter()
-        for question in random_questions:
+        self.label_question = tk.Label(self.root, text="")
+        self.label_question.pack(pady=10)
 
-            # Calculate the elapsed time
-            elapsed_time = time.perf_counter() - start_time
+        self.radio_var = tk.StringVar()
+        self.radio_var.set("0")
 
-            # Display the elapsed time
-            print(f"Elapsed time: {elapsed_time:.2f} seconds")
+        self.radio_buttons = []
+        for i in range(4):
+            radio_button = tk.Radiobutton(self.root, text="", variable=self.radio_var, value=str(i + 1))
+            radio_button.pack()
 
-            # Check if the time is up
-            if time.time() > timeout:
-                print("Time's up! Your score is:", self.score)
-                break
+            self.radio_buttons.append(radio_button)
 
-            user_answer = self.display_question(question)
-            correct_answer = str(question["answer"])
+        self.next_button = tk.Button(self.root, text="Next", command=self.next_question)
+        self.next_button.pack(pady=10)
 
-            if time.time() >= timeout:
-                self.score += 0
-            elif user_answer == 'leave':
-                print("Question Skipped")
-                self.score += 0
-            elif user_answer == correct_answer:
-                print("Correct!\n")
-                self.score += 4
-            else:
-                print(f"Wrong! The correct answer is {correct_answer}.\n")
-                self.score -= 1
+        self.load_question()
 
-        # Display the score
-        if time.time() <= timeout:
-            print(f"You scored {self.score} out of {len(random_questions)*4}.")
+    def load_question(self):
+        if self.question_index < len(self.questions) and self.chances_remaining > 0:
+            question_data = self.questions[self.question_index]
+            self.label_question.config(text=question_data["text"])
 
+            for i in range(4):
+                self.radio_buttons[i].config(text=question_data["options"][i])
 
-# Easy Questions
-easy_questions = [
-    {
+        else:
+            self.show_final_score()
+
+    def next_question(self):
+        user_answer = self.radio_var.get()
+        correct_answer = str(self.questions[self.question_index]["answer"])
+
+        if user_answer == "0":
+            messagebox.showwarning("Invalid Answer", "Please select an option.")
+            return
+
+        if user_answer == correct_answer:
+            self.score += 4
+
+        self.question_index += 1
+        self.chances_remaining -= 1
+        self.radio_var.set("0")
+
+        self.load_question()
+
+    def show_final_score(self):
+        messagebox.showinfo("Quiz Completed", f"Quiz completed! Your final score: {self.score}")
+        self.root.destroy()
+
+# Sample questions
+sample_questions = [
+   {
         "text": "What is the capital of France?",
         "options": ["Berlin", "Madrid", "Paris", "Rome"],
         "answer": 3,
@@ -203,8 +214,6 @@ easy_questions = [
         "options": ["Beyoncé", "Madonna", "Lady Gaga", "Taylor Swift"],
         "answer": 2,
     },
-  ]
-medium_questions = [
     {
         "text": "What is the currency of Japan?",
         "options": ["Won", "Yuan", "Ringgit", "Yen"],
@@ -355,9 +364,7 @@ medium_questions = [
         "options": ["1961", "1969", "1975", "1981"],
         "answer": 2,
     },
-]
-hard_questions = [
-    {
+     {
         "text": "In which year did World War I begin?",
         "options": ["1912", "1914", "1916", "1918"],
         "answer": 2,
@@ -508,8 +515,6 @@ hard_questions = [
         "options": ["1215", "1300", "1400", "1500"],
         "answer": 1,
     },
-]
-mixed_questions = [
     {
         "text": "What is the largest ocean on Earth?",
         "options": ["Atlantic Ocean", "Indian Ocean", "Southern Ocean", "Pacific Ocean"],
@@ -660,36 +665,14 @@ mixed_questions = [
         "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
         "answer": 3,
     },
+    # Add more questions as needed
 ]
-    # Create a Quiz object and run the quiz
-print("Welcome to Quiz Competetion.\n")
-print("Instructions:")
-print("1. For every correct answer you get 4 marks and for every wrong answer you get -1. Type 'leave' if you want to skip the question")
-print("2. Write the option number. For eg. if second option is correct, your input should be 2")
-print("3. You have only 100 seconds to answer 10 questions\n")
-print("Choose your question level")
-while True:
-    print("1. Easy Level\n2. Medium Level\n3. Hard Level\n4. Mixed Questions\n5. Quit")
-    choice = input("Enter your choice: ")
-    if choice == '1':
-        my_quiz = Quiz(easy_questions)
-        my_quiz.run_quiz()
-        break
-    elif choice == '2':
-        my_quiz = Quiz(medium_questions)
-        my_quiz.run_quiz()
-        break
-    elif choice == '3':
-        my_quiz = Quiz(hard_questions)
-        my_quiz.run_quiz()
-        break
-    elif choice == '4':
-        my_quiz = Quiz(mixed_questions)
-        my_quiz.run_quiz()
-        break
-    elif choice == "5":
-        print("Exiting Quiz. Gooodbye!")
-        break
-    else:
-        print("Invalid choice. Please try again.")
 
+# Create Tkinter window
+root = tk.Tk()
+
+# Create QuizGUI instance
+quiz_gui = QuizGUI(root, sample_questions)
+
+# Start the Tkinter event loop
+root.mainloop()
