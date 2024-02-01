@@ -1,77 +1,85 @@
 import random
 
-def display_intro():
-    print("Welcome to Text-Based Puzzle Game!")
-    print("Solve puzzles to progress through levels and win the game.\n")
+class TextBasedPuzzleGame:
+    def __init__(self):
+        self.levels = [
+            {"type": "riddle", "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?", "answer": "echo"},
+            {"type": "logic", "question": "The sun rises in the east.", "correct_option": "True"},
+            {"type": "word", "word": "python", "scrambled_word": "nythop"}
+            # Add more levels and puzzles as needed
+        ]
 
-def display_level_intro(level_name):
-    print(f"\n*** {level_name} ***\n")
+    def display_intro(self):
+        print("Welcome to Text-Based Puzzle Game!")
+        print("Solve puzzles to progress through levels and win the game.\n")
 
-def solve_riddle(riddle, answer):
-    print(f"Riddle: {riddle}")
-    user_answer = input("Your answer: ").lower()
+    def display_level_intro(self, level_name):
+        print(f"\n*** {level_name} ***\n")
 
-    if user_answer == answer:
-        print("Correct! You've solved the riddle.")
-        return True
-    else:
-        print("Incorrect. Try again.")
-        return False
+    def solve_riddle(self, riddle, answer):
+        print(f"Riddle: {riddle}")
+        user_answer = input("Your answer: ").lower()
 
-def solve_logic_puzzle(question, correct_option):
-    print(f"Logic Puzzle: {question}")
-    print("Options:")
-    options = ["A", "B", "C", "D"]
-    for i in range(4):
-        print(f"{options[i]}. {correct_option if i == 0 else random.choice(['True', 'False'])}")
+        if user_answer == answer:
+            print("Correct! You've solved the riddle.")
+            return True
+        else:
+            print("Incorrect. Try again.")
+            return False
 
-    user_answer = input("Your choice (A/B/C/D): ").upper()
+    def solve_logic_puzzle(self, question, correct_option):
+        print(f"Logic Puzzle: {question}")
+        print("Options:")
+        options = ["A", "B", "C", "D"]
+        for i in range(4):
+            print(f"{options[i]}. {correct_option if i == 0 else random.choice(['True', 'False'])}")
 
-    if user_answer == "A" and correct_option == "True":
-        print("Correct! You've solved the logic puzzle.")
-        return True
-    elif user_answer != "A" and correct_option == "False":
-        print("Correct! You've solved the logic puzzle.")
-        return True
-    else:
-        print("Incorrect. Try again.")
-        return False
+        user_answer = input("Your choice (A/B/C/D): ").upper()
 
-def solve_word_game(word, scrambled_word):
-    print(f"Unscramble the Word: {scrambled_word}")
-    user_answer = input("Your answer: ").lower()
+        if user_answer == "A" and correct_option == "True":
+            print("Correct! You've solved the logic puzzle.")
+            return True
+        elif user_answer != "A" and correct_option == "False":
+            print("Correct! You've solved the logic puzzle.")
+            return True
+        else:
+            print("Incorrect. Try again.")
+            return False
 
-    if user_answer == word:
-        print("Correct! You've unscrambled the word.")
-        return True
-    else:
-        print("Incorrect. Try again.")
-        return False
+    def solve_word_game(self, word, scrambled_word):
+        print(f"Unscramble the Word: {scrambled_word}")
+        user_answer = input("Your answer: ").lower()
 
-def play_game():
-    display_intro()
+        if user_answer == word:
+            print("Correct! You've unscrambled the word.")
+            return True
+        else:
+            print("Incorrect. Try again.")
+            return False
 
-    # Level 1: Easy
-    display_level_intro("Level 1 - Easy Riddle")
-    if not solve_riddle("I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?", "echo"):
-        print("You failed to solve the riddle. Game over.")
-        return
+    def play_game(self):
+        self.display_intro()
 
-    # Level 2: Medium
-    display_level_intro("Level 2 - Medium Logic Puzzle")
-    if not solve_logic_puzzle("The sun rises in the east.", "True"):
-        print("You failed to solve the logic puzzle. Game over.")
-        return
+        for idx, level in enumerate(self.levels, start=1):
+            level_name = f"Level {idx} - {level['type'].capitalize()}"
 
-    # Level 3: Hard
-    display_level_intro("Level 3 - Hard Word Game")
-    if not solve_word_game("python", "nythop"):
-        print("You failed to unscramble the word. Game over.")
-        return
+            self.display_level_intro(level_name)
 
-    # Add more levels and puzzles as needed
+            if level['type'] == 'riddle':
+                if not self.solve_riddle(level['question'], level['answer']):
+                    print("You failed to solve the riddle. Game over.")
+                    return
+            elif level['type'] == 'logic':
+                if not self.solve_logic_puzzle(level['question'], level['correct_option']):
+                    print("You failed to solve the logic puzzle. Game over.")
+                    return
+            elif level['type'] == 'word':
+                if not self.solve_word_game(level['word'], level['scrambled_word']):
+                    print("You failed to unscramble the word. Game over.")
+                    return
 
-    print("Congratulations! You've completed the game.")
+        print("Congratulations! You've completed the game.")
 
 if __name__ == "__main__":
-    play_game()
+    game = TextBasedPuzzleGame()
+    game.play_game()
