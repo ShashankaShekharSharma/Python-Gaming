@@ -1,45 +1,40 @@
-import time
+import tkinter as tk
+from tkinter import messagebox
 import random
+import time
 
-class StonePaperScissors:
-    def __init__(self):
-        pass
+class StonePaperScissorsGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Stone Paper Scissors")
+        self.root.geometry("300x200")
 
-    def print_with_delay(self, message, delay=1):
-        print(message)
-        time.sleep(delay)
+        self.label_intro = tk.Label(self.root, text="Stone Paper Scissors Game")
+        self.label_intro.pack(pady=10)
 
-    def get_user_choice(self):
-        while True:
-            user_choice = input("Choose (1) Stone, (2) Paper, or (3) Scissors: ")
-            if user_choice in ['1', '2', '3']:
-                return user_choice
-            else:
-                self.print_with_delay("Invalid input! Please enter 1, 2, or 3.")
+        self.button_stone = tk.Button(self.root, text="Stone", command=lambda: self.play("Stone"))
+        self.button_stone.pack(pady=5)
 
-    def play_game(self):
-        self.print_with_delay("Welcome to Stone Paper Scissors!")
+        self.button_paper = tk.Button(self.root, text="Paper", command=lambda: self.play("Paper"))
+        self.button_paper.pack(pady=5)
 
-        while True:
-            self.print_with_delay("\nLet's play Stone Paper Scissors", 2)
+        self.button_scissors = tk.Button(self.root, text="Scissors", command=lambda: self.play("Scissors"))
+        self.button_scissors.pack(pady=5)
 
-            user_choice = self.get_user_choice()
+    def play(self, user_choice):
+        self.label_intro.config(text="Computer's choice is: ")
+        self.root.update()
+        time.sleep(1)
 
-            options = ['Stone', 'Paper', 'Scissors']
-            self.print_with_delay(f"You chose: {options[int(user_choice) - 1]}", 1)
+        computer_choices = ['Stone', 'Paper', 'Scissors']
+        computer_choice = random.choice(computer_choices)
 
-            self.print_with_delay("Computer is making a choice...", 2)
-            computer_choice = random.choice(options)
-            self.print_with_delay(f"Computer chose: {computer_choice}", 1)
+        self.label_intro.config(text=f"Computer's choice is: {computer_choice}")
+        self.root.update()
+        time.sleep(1)
 
-            result = self.determine_winner(options[int(user_choice) - 1], computer_choice)
-            self.print_with_delay(result, 1)
-
-            play_option = input("Do you want to play again? (1 for Yes, 0 for No): ")
-
-            if play_option != '1':
-                self.print_with_delay("Thank you for playing! Bye Bye")
-                break
+        result = self.determine_winner(user_choice, computer_choice)
+        messagebox.showinfo("Result", result)
 
     def determine_winner(self, user_choice, computer_choice):
         if user_choice == computer_choice:
@@ -54,6 +49,6 @@ class StonePaperScissors:
             return "Computer wins!"
 
 if __name__ == "__main__":
-    hangman_game = StonePaperScissors()
-    hangman_game.play_game()
-
+    root = tk.Tk()
+    game = StonePaperScissorsGUI(root)
+    root.mainloop()
