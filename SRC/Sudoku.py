@@ -135,7 +135,8 @@ class SudokuGame:
                 print("Invalid input. Try again.")
 
         self.print_board_with_blanks(user_board, puzzle)
-        if user_board == puzzle:
+        if all(user_board[i] == puzzle[i] for i in range(9)):
+
             print("You win!")
         else:
             print("You lose!")

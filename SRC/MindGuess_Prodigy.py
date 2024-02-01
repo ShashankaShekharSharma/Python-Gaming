@@ -46,4 +46,4 @@ class MindReadingGame:
 
 # Instantiate the class and start the game
 mind_reading_game = MindReadingGame()
-mind_reading_game.play_game()
+

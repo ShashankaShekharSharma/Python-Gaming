@@ -114,4 +114,3 @@ class WordJumbleGame:
 
 # Create an instance of the WordJumbleGame class and run the game
 word_jumble_game = WordJumbleGame()
-word_jumble_game.run()
